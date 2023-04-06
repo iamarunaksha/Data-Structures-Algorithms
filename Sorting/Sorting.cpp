@@ -37,7 +37,7 @@ void bubble_sort(vector<int> &arr, int n) {                       // Worst Case,
     }
 }
 
-void bubbleSort(vector<int>& arr, int n)                        // Babbar's Code
+void bubbleSort(vector<int>& arr, int n)                        // 2nd Approach
 {   
     for(int round = 1; round<n; round++) {                     // for(int round = 0; round < (n-1); round++) {
         //for round 1 to n-1
@@ -81,7 +81,7 @@ void insertion_sort(vector<int> &arr, int n) {                 // Worst Case, Av
     }
 }
 
-void insertionSort(vector<int> &arr, int n){                   //Babbar's Code, not a better version
+void insertionSort(vector<int> &arr, int n){                   //2nd Approach, not a better version
     
     for(int i = 1; i<n; i++) {                                // i = 1; bcoz we are considering i = 0 to be sorted at first
         int temp = arr[i];
