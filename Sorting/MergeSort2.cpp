@@ -1,4 +1,4 @@
-#include<iostream>                                                  //Babbar ---> complex approach
+#include<iostream>                                                  //complex approach
 using namespace std;
 
 void merge(int *arr, int s, int e) {
