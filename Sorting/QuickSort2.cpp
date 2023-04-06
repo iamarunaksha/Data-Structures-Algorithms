@@ -1,4 +1,4 @@
-#include<bits/stdc++.h>                                 // a bit complex approach, Babbar
+#include<bits/stdc++.h>                                 // a bit complex approach
 using namespace std;
 
 int partition(vector<int> &arr, int start, int end) {
