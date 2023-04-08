@@ -14,6 +14,8 @@ int main() {
     char *c = &ch[0];
     //Pointers also prints entire string, since at c address of ch is stored which when printed through cout returns the entire string bcoz of diff implementation of cout for char arrays
     cout << c << endl;
+    
+    //char *d = "abc"           // This is a very bad practice as at first a temp memory block is created where abc is sored & address of that temp. memory is stored in the pointer d. That might be a read only memory or something else, so its never a good practice to declare char pointers this way as it points a temp memory block.
 
     char temp = 'z';
     char *p = &temp;         
