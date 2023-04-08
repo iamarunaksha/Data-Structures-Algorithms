@@ -4,7 +4,7 @@ using namespace std;
 int main () {
     
     /*
-    int arr[10] = {23, 122, 41, 67};
+    int arr[10] = {23, 122, 41, 67};                                       // https://www.codingninjas.com/codestudio/guided-paths/pointers --> Refer to this website & solve the contest for more clarity
 
     cout <<"Address of first memory block is --> " << arr << endl;
     cout << arr[0] << endl;
