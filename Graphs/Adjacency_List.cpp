@@ -271,6 +271,128 @@ public:
             }
         }
     }
+
+    //If we only want to print the count, then no need of cout statements
+    void dfsSCC(T src, unordered_map<T, bool> &visited, unordered_map<int, list<int>> &newAdjList, bool first) {
+
+        if (!first) 
+            cout<<", ";
+        
+        else 
+            first = false;
+    
+        cout<<src;
+        
+        visited[src] = true;
+
+        for(auto neighbour : newAdjList[src]) {
+
+            if(!visited[neighbour])
+                dfsSCC(neighbour, visited, newAdjList, first);
+        }
+    }
+
+    string getSuffix(int n) {
+        
+        if (n == 1 || n == 21 || n == 31) 
+            return "st";
+        
+        if (n == 2 || n == 22) 
+            return "nd";
+        
+        if (n == 3 || n == 23) 
+            return "rd";
+
+        return "th";
+    }
+
+    //Kosaraju's Algorithm
+    int countStronglyConnectedComponents(int n) {           // T.C --> O(V+E)   ||  S.C --> O(V+E)
+        
+        stack<int> st;          //S.C --> O(V)
+
+        unordered_map<int, bool> visitedTopo;   // S.C --> O(V)
+
+        //Step 1 : Find the topological ordering of the given graph    ||  T.C --> O(V + E)
+        for(int i=0; i<n; i++) {
+
+            if(!visitedTopo[i])
+                topologicalSortDFS(i, visitedTopo, st);
+        }
+
+        unordered_map<int, list<int>> newAdjList;       // S.C --> O(V+E)
+
+        //Step 2 : Reverse all the edges in the graph & store it in a new adjList    ||  T.C --> O(V + E)
+        for(auto it : adjList) {
+
+            for(auto neighbour : it.second) {
+
+                int u = it.first;
+                int v = neighbour;
+
+                //Reverse the adjList in the newAdjList
+                newAdjList[v].push_back(u);
+            }
+        }
+
+        //Step 3 : Traverse the newAdjList using DFS      ||  T.C --> O(V + E)
+
+        int count = 0;
+        
+        unordered_map<int, bool> visitedDFS;
+        
+        while(!st.empty()) {
+
+            int node = st.top();
+            st.pop();
+
+            if(!visitedDFS[node]) {
+
+                cout<<"\nPrinting "<<count+1<<getSuffix(count+1)<<" SCC : ";
+                
+                dfsSCC(node,visitedDFS, newAdjList, true);
+                
+                cout<<endl;
+                
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    //Tarjan's Algorithm
+    void findBridges(int src, int parent, int &timer, vector<int> &insertionTime, vector<int> &lowerTime, unordered_map<int, bool> &visited) {
+
+        visited[src] = true;
+        insertionTime[src] = timer;
+        lowerTime[src] = timer;
+
+        timer++;
+
+        for(auto neighbour : adjList[src]) {
+
+            if(neighbour == parent)
+                continue;
+            
+            if(!visited[neighbour]) {
+
+                //DFS call
+                findBridges(neighbour, src, timer, insertionTime, lowerTime, visited);
+
+                //Low Update
+                lowerTime[src] = min(lowerTime[src], lowerTime[neighbour]);             // Might not be the shortest route always but if updated it indicates there exists an alternate path to that node apart from the 1st parent from which its visited
+
+                //Check for bridge
+                if(insertionTime[src] < lowerTime[neighbour])
+                    cout<<neighbour<<"--"<<src<<" is a bridge"<<endl;
+            }
+
+            //Node visited & not a parent --> only update lowerTime array for src
+            else
+                lowerTime[src] = min(lowerTime[src], insertionTime[neighbour]);
+        }
+    }
 };
 
 void printBFS(Graph<int> g, int n) {
@@ -433,13 +555,67 @@ void topologicalSortusingBFS(Graph<int> g, int n) {
     cout<<endl;
 }
 
+void printFindBridges(Graph<int> g, int n) {
+    
+    vector<int> tin(n);
+    
+    vector<int> low(n);
+
+    unordered_map<int, bool> visited;
+
+    int timer = 0;
+
+    cout<<"\nPrinting the bridge(s) (if found) :"<<endl;
+    
+    g.findBridges(0, -1, timer, tin, low, visited);
+}
+
 int main() {
 
     Graph<int> g;
 
-    int n = 4;          // No. of nodes
+    int n = 7;          // No. of nodes
 
+    /*
+    g.addEdge(0, 1, 0);
+    g.addEdge(1, 2, 0);
+    g.addEdge(2, 0, 0);
+    g.addEdge(1, 6, 0);
+    g.addEdge(3, 1, 0);
+    g.addEdge(1, 4, 0);
+    g.addEdge(3, 5, 0);
+    g.addEdge(4, 5, 0);
+    */
+
+    /*
+    g.addEdge(0, 1, 0);
+    g.addEdge(0, 2, 0);
+    g.addEdge(2, 1, 0);
+    g.addEdge(0, 3, 0);
+    g.addEdge(3, 4, 0);
+    */
+    
+    printFindBridges(g, n);
+    
+    /*
+    //SCC
+    g.addEdge(0,1,1);
+    g.addEdge(1,2,1);
+    g.addEdge(2,3,1);
+    g.addEdge(3,0,1);
+    g.addEdge(2,4,1);
+    g.addEdge(4,5,1);
+    g.addEdge(5,6,1);
+    g.addEdge(6,4,1);
+    g.addEdge(6,7,1);
+
+    int ans = g.countStronglyConnectedComponents(8);
+
+    cout<<"\nNo. of strongly connected components in the graph is : "<<ans<<endl;
+    */
+    
     //DAG
+    /*
     g.addEdge(2, 4, 1);
     g.addEdge(2, 5, 1);
     g.addEdge(4, 6, 1);
@@ -448,6 +624,7 @@ int main() {
     g.addEdge(6, 7, 1);
     g.addEdge(7, 0, 1);
     g.addEdge(7, 1, 1);
+    */
     
 
     //Cyclic Directed Graph
@@ -458,9 +635,11 @@ int main() {
     g.addEdge(3, 1, 1);
     */
 
+    /*
     topologicalSortusingDFS(g, n);
 
     topologicalSortusingBFS(g,n);
+    */
 
     return 0;
 }
