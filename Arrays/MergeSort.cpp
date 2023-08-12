@@ -60,7 +60,6 @@ int main() {
 
     int size3 = size1 + size2;
     int arr3[size3] = {0};
-    
 
     merge(arr1, size1, arr2, size2, arr3);
 
