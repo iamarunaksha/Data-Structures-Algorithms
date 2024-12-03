@@ -154,6 +154,80 @@ public:
             cout<<i<<" -> "<<distance[i]<<endl; 
     }
 
+    void shortestPathDijkstras(int src, int dest, int n) { 
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> minHeap;
+        minHeap.push({0, src});
+
+        vector<int> dist(n, INT_MAX), parent(n);
+        dist[src] = 0;
+
+        for(int i=0; i<n; i++)
+            parent[i] = i;
+        
+        while(!minHeap.empty()) {
+
+            auto top = minHeap.top();
+            minHeap.pop();
+
+            int node = top.second;
+            int d = top.first;
+
+            for(auto &nbr : adjList[node]) {
+
+                int adjNode = nbr.first;
+                int wt = nbr.second;
+
+                int newDist = wt + d;
+
+                if(newDist < dist[adjNode]) {
+
+                    dist[adjNode] = newDist;
+
+                    minHeap.push({dist[adjNode], adjNode});
+
+                    parent[adjNode] = node;
+                }
+            }
+        }
+
+        if(dist[dest] == INT_MAX) {
+
+            cout<<"There is no path between "<<src<<" and "<<dest<<endl;
+
+            return;
+        }
+
+        vector<int> path;
+
+        int node = dest;
+
+        while(parent[node] != node) {
+
+            path.push_back(node);
+
+            node = parent[node];
+        }
+
+        path.push_back(node);       //Pushing the src node, instead of node src can be pushed as well
+
+        reverse(begin(path), end(path));
+
+        cout<<"Shortest path between "<<src<<" and "<<dest<<" is as follows : "<<endl;
+
+        bool first = true;
+
+        for(auto &it : path) {
+
+            if(!first)
+                cout<<" -> ";
+            
+            cout<<it;
+
+            first = false;
+        }   
+    }
+
     //Greedy Algorithm   ||  SSSP --> Single Source Shortest Path
     void shortestDistanceDijkstras(int src, int n) {        // T.C --> O(V^2 + E log(V)) {because of set}    || S.C --> O(2V) {1 V for array & 1 V for set}
 
@@ -345,6 +419,7 @@ int main() {
     g.addEdge(4, 3, 11, 0);
     g.addEdge(6, 5, 9, 0);
     g.addEdge(4, 5, 6, 0);
+    //g.addEdge(0, 1, 5, 0);    //For shortestPathDijkstras
     */
 
     //Bellman Ford
@@ -376,6 +451,8 @@ int main() {
     int dest = 4;
 
     g.shortestPathBFS(src, dest);
+
+    g.shortestPathDijkstras(src, dest, 7);
     */
 
     /*
