@@ -352,7 +352,7 @@ public:
         cout<<endl;
     }
 
-    //MSSP --> Multiple Source Shortest Path
+    //MSSP --> Multiple Source Shortest Path, not the most optimal because of the higher T.C
     void floydWarshall(int n) {                                     // T.C --> O(V^3)   ||  S.C --> O(V^2)
 
         vector<vector<int>> dist(n, vector<int>(n, 1e9));         // INT_MAX is not used bcoz in (dist[src][helper] + dist[helper][dest]) step there would be INT overflow adding something to INT_MAX would give -ive no & that would be takean as min.
@@ -422,7 +422,7 @@ public:
         return index;
 	}
 
-    //Works only on connected undirected graphs
+    //Works only on connected undirected graphs. Greedy Algorithm
     void primsAlgorithmBruteForce(int n) {       //T.C --> O(n^2)   ||  S.C --> O(4n)
 
         vector<int> key(n, INT_MAX), parent(n, -1);     //Key serves as tracking the minimum edge wt. to reach that node(i)
