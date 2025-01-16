@@ -402,6 +402,183 @@ public:
         
         cout<<endl;
     }
+
+    int getMinKeyNode(vector<int> &key, vector<bool> &mst) {
+        
+        int mini = INT_MAX;     //Key value
+        
+        int index = -1;      //Node
+        
+        for(int i=0; i<key.size(); i++) {
+            
+            if((key[i] < mini) && !mst[i]) {
+                
+                mini = key[i];
+                
+                index = i;
+            }
+        }
+        
+        return index;
+	}
+
+    //Works only on connected undirected graphs
+    void primsAlgorithmBruteForce(int n) {       //T.C --> O(n^2)   ||  S.C --> O(4n)
+
+        vector<int> key(n, INT_MAX), parent(n, -1);     //Key serves as tracking the minimum edge wt. to reach that node(i)
+        key[0] = 0;     //Starting with node 0 in the MST, any node can be chosen if mot 0
+
+        vector<bool> mst(n, false);     //Indicates whether the node 'i' has been included in the MST or not
+
+        for(int i=1; i<n; i++) {        //Since there will be n-1 edges in the MST, so we loop for n-1 times, O(n^2)
+
+            //Step 1 : Find index or node with min value that is not added to mst
+            int u = getMinKeyNode(key, mst);        //O(n)
+
+            /*
+            if(u == -1)     //Redundant part, can be removed
+                break;
+            */
+
+            //Step 2 : Add the node into the MST list
+            mst[u] = true;  //Node 'u' has been included in the MST
+
+            //Step 3 : Process all adjacent nodes of u
+            for(auto &edge : adjList[u]) {      //O(n)
+                
+                int v = edge.first;
+                int w = edge.second;
+                
+                if(!mst[v] && (w < key[v])) {
+                    
+                    key[v] = w;
+                    
+                    parent[v] = u;
+                }
+            }
+        }
+
+        vector<vector<int>> edges;
+
+        for(int i=1; i<n; i++)      //O(n)
+            edges.push_back({parent[i], i});
+        
+        int mstSum = 0;
+
+        for(int u=0; u<n; u++)      //O(n)
+            mstSum += key[u];
+        
+        cout<<"Edges in the MST are : "<<endl;
+
+        for(auto &edge : edges) 
+            cout<<edge[0]<<" -> "<<edge[1]<<", edge wt : "<<key[edge[1]]<<endl;
+        
+        cout<<endl<<"MST sum : "<<mstSum<<endl;
+    }
+
+    void primsAlgorithmOptimal1(int n) {       //T.C --> O(n (logn + E))   ||  S.C --> O(4n)
+
+        vector<int> key(n, INT_MAX), parent(n, -1);     //Key serves as tracking the minimum edge wt. to reach that node(i)
+        key[0] = 0;     //Starting with node 0 in the MST, any node can be chosen if mot 0
+
+        vector<bool> mst(n, false);     //Indicates whether the node 'i' has been included in the MST or not
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> minHeap;
+        minHeap.push({0, 0});       //{key, node}    
+        
+        while(!minHeap.empty()) {        //Since there will be n-1 edges in the MST, so we loop for n-1 times, O(n (logn + E))
+
+            auto top = minHeap.top();   //O(1)
+            minHeap.pop();  //O(logn)
+
+            //Step 1 : Find index or node with min value that is not added to mst
+            int u = top.second;        //O(logn)
+
+            //Step 2 : Add the node into the MST list
+            mst[u] = true;  //Node 'u' has been included in the MST
+
+            //Step 3 : Process all adjacent nodes of u
+            for(auto &edge : adjList[u]) {      //O(E)
+                
+                int v = edge.first;
+                int w = edge.second;
+                
+                if(!mst[v] && (w < key[v])) {
+                    
+                    key[v] = w;
+                    
+                    parent[v] = u;
+
+                    minHeap.push({w, v});
+                }
+            }
+        }
+
+        vector<vector<int>> edges;
+
+        for(int i=1; i<n; i++)      //O(n)
+            edges.push_back({parent[i], i});
+        
+        int mstSum = 0;
+
+        for(int u=0; u<n; u++)      //O(n)
+            mstSum += key[u];
+        
+        cout<<"Edges in the MST are : "<<endl;
+
+        for(auto &edge : edges)     //O(E)
+            cout<<edge[0]<<" -> "<<edge[1]<<", edge wt : "<<key[edge[1]]<<endl;
+        
+        cout<<endl<<"MST sum : "<<mstSum<<endl;
+    }
+
+    void primsAlgorithmOptimal2(int n) {        //T.C --> O(E) + O(logE + O(ElogE)) ≈ O(ElogE)  ||  S.C --> O(n + E)
+
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> minHeap;    //S.C --> O(E)
+        minHeap.push({0, 0, -1});     //{wt, node, parent}
+        
+        vector<int> mst(n, false);    //S.C --> O(n)
+        
+        int mstSum = 0;
+        
+        vector<vector<int>> edges;
+        
+        while(!minHeap.empty()) {
+            
+            auto top = minHeap.top();
+            minHeap.pop();
+            
+            int node = top[1], parent = top[2];
+            
+            int wt = top[0];
+            
+            if(mst[node])
+                continue;
+            
+            mst[node] = true;       //Adding the node in the MST
+            
+            mstSum += wt;
+            
+            if(parent != -1)
+                edges.push_back({parent, node, wt});
+            
+            for(auto &it : adjList[node]) {
+                
+                int adjNode = it.first;
+                int adjWt = it.second;
+                
+                if(!mst[adjNode])
+                    minHeap.push({adjWt, adjNode, node});
+            }
+        }
+        
+        cout<<"Edges in the MST are : "<<endl;
+
+        for(auto &edge : edges)     //O(E)
+            cout<<edge[0]<<" -> "<<edge[1]<<", edge wt : "<<edge[2]<<endl;
+        
+        cout<<endl<<"MST sum : "<<mstSum<<endl;
+    }
 };
 
 int main() {
@@ -419,8 +596,17 @@ int main() {
     g.addEdge(4, 3, 11, 0);
     g.addEdge(6, 5, 9, 0);
     g.addEdge(4, 5, 6, 0);
+    
+    /* For primsAlgorithm
+    g.addEdge(0, 1, 2, 0);
+    g.addEdge(0, 2, 1, 0);
+    g.addEdge(0, 3, 3, 0);
+    */
+    
     //g.addEdge(0, 1, 5, 0);    //For shortestPathDijkstras
     */
+    
+    //g.primsAlgorithmOptimal2(7);
 
     //Bellman Ford
     /*
