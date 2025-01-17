@@ -570,6 +570,48 @@ void printFindBridges(Graph<int> g, int n) {
     g.findBridges(0, -1, timer, tin, low, visited);
 }
 
+class DisjointSet {
+
+    vector<int> parent;
+    vector<int> rank;
+
+public:
+
+    DisjointSet(int n) {
+
+        parent.resize(n+1);
+        rank.resize((n + 1), 0);
+
+        for(int i=0; i<=n; i++)       // '<=' for 1-based indexing graphs 
+            parent[i] = i;
+    }
+
+    int findParent(int node) {
+
+        if(node == parent[node])
+            return node;
+        
+        return parent[node] = findParent(parent[node]);     //Path Compression by adding -> parent[node]
+    }
+
+    void unionByRank(int u, int v) {
+
+        int u_parent = findParent(u);
+        int v_parent = findParent(v);
+
+        if(u_parent == v_parent)        //u & v belong to the same component
+            return;
+
+        if(rank[u_parent] < rank[v_parent])     //v_parent should be the parent of u_parent
+            swap(u_parent, v_parent);
+        
+        parent[v_parent] = u_parent;        //rank[u_parent] > rank[v_parent], and u_parent should be the parent of v_parent
+
+        if(rank[u_parent] == rank[v_parent])    //Increasing rank of u_parent, when since v_parent is added u_parent. In the case of equal ranks either u_parent or v_parent can be the parent. But here u_parent has been made the parent
+            rank[u_parent]++;
+    }
+};
+
 int main() {
 
     Graph<int> g;
@@ -640,6 +682,28 @@ int main() {
 
     topologicalSortusingBFS(g,n);
     */
+
+    DisjointSet ds(7);
+
+    ds.unionByRank(1, 2);
+    ds.unionByRank(2, 3);
+    ds.unionByRank(4, 5);
+    ds.unionByRank(6, 7);
+    ds.unionByRank(5, 6);
+
+    if(ds.findParent(3) == ds.findParent(7))
+        cout<<"\nBelongs to the same component"<<endl;
+    
+    else
+        cout<<"\nDoes not belong to the same component"<<endl;
+
+    ds.unionByRank(3, 7);
+
+    if(ds.findParent(3) == ds.findParent(7))
+        cout<<"\nBelongs to the same component"<<endl;
+    
+    else
+        cout<<"\nDoes not belong to the same component"<<endl;
 
     return 0;
 }
