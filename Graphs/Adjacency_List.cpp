@@ -610,6 +610,29 @@ public:
         if(rank[u_parent] == rank[v_parent])    //Increasing rank of u_parent, when since v_parent is added u_parent. In the case of equal ranks either u_parent or v_parent can be the parent. But here u_parent has been made the parent
             rank[u_parent]++;
     }
+
+    void unionBySize(int u, int v) {
+
+        int u_parent = findParent(u);
+        int v_parent = findParent(v);
+
+        if(u_parent == v_parent)        //u & v belong to the same component
+            return;
+
+        if(size[u_parent] < size[v_parent]) {     //v_parent should be the parent of u_parent
+            
+            parent[u_parent] = v_parent;
+
+            size[v_parent] += size[u_parent];
+        }
+
+        else {              //this handles for both size[u_parent] >= size[v_parent], equal & greater than case.
+            
+            parent[v_parent] = u_parent;
+
+            size[u_parent] += size[v_parent];
+        }
+    }
 };
 
 int main() {
