@@ -1,6 +1,68 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+class DisjointSet {         //T.C --> O(4alpha)   ||   S.C --> O(3n)
+
+    vector<int> parent;
+    vector<int> rank, size;
+
+public:
+    DisjointSet(int n) {
+
+        parent.resize(n+1);
+        rank.resize((n + 1), 0);
+        size.resize((n + 1), 1);
+
+        for(int i=0; i<=n; i++)       // '<=' for 1-based indexing graphs 
+            parent[i] = i;
+    }
+    int findParent(int node) {
+
+        if(node == parent[node])
+            return node;
+        
+        return parent[node] = findParent(parent[node]);     //Path Compression by adding -> parent[node]
+    }
+    void unionByRank(int u, int v) {
+
+        int u_parent = findParent(u);
+        int v_parent = findParent(v);
+
+        if(u_parent == v_parent)        //u & v belong to the same component
+            return;
+
+        if(rank[u_parent] < rank[v_parent])     //v_parent should be the parent of u_parent
+            swap(u_parent, v_parent);
+        
+        parent[v_parent] = u_parent;        //rank[u_parent] > rank[v_parent], and u_parent should be the parent of v_parent
+
+        if(rank[u_parent] == rank[v_parent])    //Increasing rank of u_parent, when since v_parent is added u_parent. In the case of equal ranks either u_parent or v_parent can be the parent. But here u_parent has been made the parent
+            rank[u_parent]++;
+    }
+    void unionBySize(int u, int v) {
+
+        int u_parent = findParent(u);
+        int v_parent = findParent(v);
+
+        if(u_parent == v_parent)        //u & v belong to the same component
+            return;
+
+        if(size[u_parent] < size[v_parent]) {     //v_parent should be the parent of u_parent
+            
+            parent[u_parent] = v_parent;
+
+            size[v_parent] += size[u_parent];
+        }
+
+        else {              //this handles for both size[u_parent] >= size[v_parent], equal & greater than case.
+            
+            parent[v_parent] = u_parent;
+
+            size[u_parent] += size[v_parent];
+        }
+    }
+};
+
 class Graph {
 public:
 
@@ -579,6 +641,58 @@ public:
         
         cout<<endl<<"MST sum : "<<mstSum<<endl;
     }
+
+    void kruskalsAlgo(int n) {      //T.C --> O(n + E) + O(ElogE) + O(E x 4alpha)   ||  S.C --> O(2n + E)
+    
+        vector<vector<int>> edges;
+
+        for(int i=0; i<n; i++) {    //Preparing edges from adjList   | O(n + E)
+
+            int u = i;
+
+            for(auto &neighbour : adjList[u]) {
+
+                int v = neighbour.first;
+                
+                int wt = neighbour.second;
+
+                edges.push_back({u, v, wt});    //Edges with same wt. will get inserted twice in edges since its an undirected graph
+            }
+        }
+
+        sort(edges.begin(), edges.end(), [](vector<int> &a, vector<int> &b) {       //O(ElogE)
+            return a[2] < b[2];
+        });
+
+        DisjointSet ds(n);
+
+        int cost = 0;
+
+        vector<vector<int>> mst;
+
+        for(auto &edge : edges) {       //O(E x 4alpha)
+
+            int u = edge[0];
+            int v = edge[1];
+            int w = edge[2];
+
+            if(ds.findParent(u) != ds.findParent(v)) {
+
+                mst.push_back({u, v, w});
+                
+                cost += w;
+
+                ds.unionByRank(u, v);
+            }
+        }
+
+        cout<<"\nMinimum Spanning Tree consists of the following edges :"<<endl;
+
+        for(auto edge : mst) 
+            cout<<edge[0]<<" --> "<<edge[1]<<", edge wt. : "<<edge[2]<<endl;
+
+        cout<<"\nCost of the Minimum Spanning Tree : "<<cost<<endl;
+    }
 };
 
 int main() {
@@ -607,6 +721,7 @@ int main() {
     */
     
     //g.primsAlgorithmOptimal2(7);
+    g.kruskalsAlgo(7);
 
     //Bellman Ford
     /*
