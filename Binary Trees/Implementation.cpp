@@ -115,48 +115,6 @@ void reverseLevelOrder(node* root) {
     }
 }
 
-void inorder(node* root) {
-
-    if(root == NULL)
-        return;
-    
-    //L
-    inorder(root -> left);
-
-    //N
-    cout<<root -> data<<" ";
-
-    //R
-    inorder(root -> right);
-}
-
-void inorderIterative(node* root) {
-    
-    stack<node*> s;
-    node* curr = root;
-
-    while(curr || !s.empty()) {
-
-        // Reach the left most Node of the curr Node
-        while(curr) {
-    
-            //Insert current tree node on the stack before traversing the node's left subtree
-            s.push(curr);
-            
-            curr = curr -> left;
-        }
-
-        // Current must be NULL at this point
-        curr = s.top();
-        s.pop();
-
-        cout << curr->data << " ";
-
-        //The node and its left subtree is visited. Now, it's right subtree's turn
-        curr = curr->right;
-    }
-}
-
 void preorder(node* root) {
 
     if(root == NULL)
@@ -192,6 +150,48 @@ void preOrderIterative(node *root) {
         
         if(curr -> left)
             st.push(curr -> left);
+    }
+}
+
+void inorder(node* root) {
+
+    if(root == NULL)
+        return;
+    
+    //L
+    inorder(root -> left);
+
+    //N
+    cout<<root -> data<<" ";
+
+    //R
+    inorder(root -> right);
+}
+
+void inorderIterative(node* root) {
+    
+    stack<node*> s;
+    node* curr = root;
+
+    while(curr || !s.empty()) {
+
+        // Reach the left most Node of the curr Node
+        while(curr) {
+    
+            //Insert current tree node on the stack before traversing the node's left subtree
+            s.push(curr);
+            
+            curr = curr -> left;
+        }
+
+        // Current must be NULL at this point
+        curr = s.top();
+        s.pop();
+
+        cout << curr -> data << " ";
+
+        //The node and its left subtree is visited. Now, it's right subtree's turn
+        curr = curr -> right;
     }
 }
 
