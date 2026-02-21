@@ -21,7 +21,7 @@ public:
         
         tree.resize(max_size); // Resize the segment tree to the maximum size
         
-        lazy.resize(max_size);
+        lazy.assign(max_size, 0);
     }
 
     void buildTreeRangeSum(int i, int l, int r, vector<int> &arr) {     // Build the segment tree in O(4n) = O(n) time. The buildTree function is called recursively to build the segment tree. The base case is when l == r, which means we have reached a leaf node. In this case, we set the value of the node to the corresponding element in the array. Otherwise, we calculate the mid-point of the range and recursively call buildTree for the left and right children. Finally, we combine the results of the left and right children to set the value of the current node.
@@ -133,3 +133,4 @@ public:
 int main() {
     return 0;
 }
+
