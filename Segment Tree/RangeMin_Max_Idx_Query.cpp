@@ -66,7 +66,7 @@ public:
         int leftMaxIdx = queryRangeMax(start, end, ((2 * i) + 1), l, mid);             // Query the left child
         int rightMaxIdx = queryRangeMax(start, end, ((2 * i) + 2), (mid + 1), r);           // Query the right child
 
-        if((leftMaxIdx == -1))
+        if(leftMaxIdx == -1)
           return rightMaxIdx;
         
         if((rightMaxIdx == -1) || (arr[leftMaxIdx] >= arr[rightMaxIdx]))
