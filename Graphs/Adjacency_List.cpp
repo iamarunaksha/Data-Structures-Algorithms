@@ -574,6 +574,7 @@ class DisjointSet {
 
     vector<int> parent;
     vector<int> rank;
+    vector<int> size;
 
 public:
 
@@ -581,6 +582,7 @@ public:
 
         parent.resize(n+1);
         rank.resize((n + 1), 0);
+        size.resize((n + 1), 0);
 
         for(int i=0; i<=n; i++)       // '<=' for 1-based indexing graphs 
             parent[i] = i;
