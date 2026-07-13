@@ -180,6 +180,42 @@ public:
         cout<<endl;
     }
 
+	vector<int> zeroOneBFS(int n, int src) {        //O(V + E)
+
+        const int INF = 1e9;
+
+        vector<int> dist(n, INF);
+        dist[src] = 0;
+        
+        vector<int> parent(n, -1);        //It can be used to reconstruct path
+
+        deque<int> dq;
+        dq.push_front(src);
+
+        while(!dq.empty()) {
+
+            int u = dq.front();
+            dq.pop_front();
+
+            for(auto &[v, wt] : adjList[u]) {
+
+                if((dist[u] + wt) < dist[v]) {
+
+                    dist[v] = dist[u] + wt;
+                    parent[v] = u;
+
+                    if(wt == 0)
+                        dq.push_front(v);
+                    
+                    else
+                        dq.push_back(v);
+                }
+            }
+        }
+
+        return dist;
+    }
+
     void shortestDistanceDFS(int dest, int n, stack<int> &topoOrder) {
 
         vector<int> distance(n, INT_MAX);               // For finding shortest path we need a parent DS
